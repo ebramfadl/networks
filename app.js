@@ -54,7 +54,6 @@ connectToDb((err)=> {
 
 
 server.get('/', (request,response) => {
-
   response.render('login');
 })
 
@@ -65,11 +64,13 @@ server.get('/login', (request,response) => {
 //Log in
 server.post('/', async (request,response) =>{
 
-  var name = request.body.username;
-  var pass = request.body.password;
+  var name = request.body.username; 
+  var pass = request.body.password; 
 
+  
   const user = await db.collection('users').findOne({username:name,password:pass});
 
+  
   if(user === null){
     var content = "You are not signed up, Please create an account!";
     response.render('message',{content});
@@ -86,30 +87,39 @@ server.post('/', async (request,response) =>{
 
 server.get('/registration', (request,response) =>{
   response.render('registration');
+  //remember that we need to create a get method for all webpages
 });
 
 server.post('/register', async (request,response) =>{
-  var name = request.body.username;
-  var pass = request.body.password;
+  var name = request.body.username;//retrieve the username value from the front end
+  var pass = request.body.password;//retrieve the password value from the front end
 
+  //find an object that it's username attribute has the value name
+  //const user (will hold an object if it was found in the database otherwise it will hold Null)
   var user = await db.collection('users').findOne( {username : name});
 
+  //this is to check if the user was found already in the database in that case display an error message
   if(user != null){
     var content  = "Username already token please choose another one";
-    response.render('message',{content});
-    return ;
+    response.render('message',{content}); // render to the message page with a variable 'content' to be displayed as an HTML text between <h1> </h1>
+    return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
   
+  //to check if one of the input fields is empty
   if(name == "" || pass == ""){
     var content  = "Username or Password field is missing";
     response.render('message',{content});
-    return ;
+    return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
 
+  //create the user object
   var user = {username : name , password : pass};
 
+  //add it to the database (which means that someone created an account) 
   await db.collection('users').insertOne(user);
 
+  //send that user to the login page after registeration is successful(as required in the description)
+  //we use redirect to go one page back while render to go one page forward
   response.redirect('/login');
 
 })
