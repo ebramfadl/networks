@@ -1,22 +1,15 @@
 const cookieParser = require('cookie-parser');
 var express = require('express');
 var server = express();
-var mongoose = require('mongoose');
 var path = require('path');
 var bodyParser = require('body-parser');
 var sessions = require('express-session');
-var User = require('./model/user');
-const { request } = require('http');
-const { response } = require('express');
 
 
 server.set('views',path.join(__dirname, 'views'));
 server.set('view engine','ejs');
 
-mongoose.connect('mongodb://localhost:27017', {useNewUrlParser : true, useUnifiedTopology:true})
-.then( () => { console.log("MONGO CONNECTION OPEN") } )
-.catch( err => { console.log("OH NO MONGO CONNECTION ERROR!!!!") ;
-console.log(err)} );
+
 
 server.use(express.json());
 server.use(express.urlencoded({extended: false}));
@@ -25,20 +18,6 @@ server.use(bodyParser.json());
 server.use(cookieParser());
 
 
-// var userOneList = ["madrid","cairo","el5artoum"];
-// var userOne = new User( {username:"janaabubakr" , password :"12345"});
-// userOne.wishList = userOneList;
-
-// var userTwoList = ["paris","alex","addis ababa"];
-// var userTwo = new User( {username:"arwagad" , password :"456789"});
-// userTwo.wishList = userTwoList;
-
-// async function fun(){
-//   await userTwo.save();
-// }
-
-
-// fun();
 
 
 server.use(sessions({
@@ -50,6 +29,24 @@ server.use(sessions({
 
 
 var session 
+
+  
+const {connectToDb , getDb} = require('./db');
+
+let db
+
+connectToDb((err)=> {
+  if(!err){
+    server.listen(3000, ()=>{
+      console.log("SERVER IS LISTENING ON PORT 3000")
+    })
+    db = getDb()
+  }
+  else{
+    console.log(err);
+  }
+
+})
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +66,7 @@ server.post('/', async (request,response) =>{
   const user = await User.findOne({username:name,password:pass});
 
   if(user === null){
-    var content = "You are not signed in, Please create an account";
+    var content = "You are not signed up, Please create an account!";
     response.render('message',{content});
     return;
   }
@@ -84,7 +81,6 @@ server.post('/', async (request,response) =>{
 
 
 
-server.listen(3000);
 
 
 
