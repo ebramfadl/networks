@@ -64,21 +64,27 @@ server.get('/login', (request,response) => {
 //Log in
 server.post('/', async (request,response) =>{
 
-  var name = request.body.username; 
-  var pass = request.body.password; 
+  var name = request.body.username; //retrieve the username value from the front end
+  var pass = request.body.password;//retrieve the password value from the front end
 
   
+  //find an object that it's username attribute has the value name and password has value pass
+  //const user (will hold an object if it was found in the database otherwise it will hold Null)
   const user = await db.collection('users').findOne({username:name,password:pass});
 
   
+  //if const user was found in the database it will hold an object otherwise will hold a NULL
+  //we need to check if that user is not in the database which means that he/she does not have an account
   if(user === null){
     var content = "You are not signed up, Please create an account!";
     response.render('message',{content});
     return;
   }
   
-  session = request.session
-  session.userid = request.body.username
+  
+  //the server needs to serve each user separately so each one will have it's own session 
+  session = request.session 
+  session.userid = request.body.username // the session id is the username of the user because it's unique for each user
 
   console.log(user);
   response.render('home');
@@ -94,7 +100,7 @@ server.post('/register', async (request,response) =>{
   var name = request.body.username;//retrieve the username value from the front end
   var pass = request.body.password;//retrieve the password value from the front end
 
-  //find an object that it's username attribute has the value name
+  //find an object that it's username attribute has the value name that is retrieved from the front end
   //const user (will hold an object if it was found in the database otherwise it will hold Null)
   var user = await db.collection('users').findOne( {username : name});
 
@@ -112,10 +118,13 @@ server.post('/register', async (request,response) =>{
     return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
 
-  //create the user object
+  //create the user object in json notation
+  //attribute username takes the value name which is retrieved from the front end
+  //attribute password takes the value pass which is retrieved from the front end as well
   var user = {username : name , password : pass};
 
-  //add it to the database (which means that someone created an account) 
+  //add it to the database (which means that someone created an account)
+  //hence they can login and use the website 
   await db.collection('users').insertOne(user);
 
   //send that user to the login page after registeration is successful(as required in the description)
