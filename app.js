@@ -32,6 +32,8 @@ var session
 
   
 const {connectToDb , getDb} = require('./db');
+const { request } = require('http');
+const { response } = require('express');
 
 let db
 
@@ -52,9 +54,12 @@ connectToDb((err)=> {
 
 
 server.get('/', (request,response) => {
-  
-  response.render('login');
 
+  response.render('login');
+})
+
+server.get('/login', (request,response) => {
+  response.render('login');
 })
 
 //Log in
@@ -63,14 +68,14 @@ server.post('/', async (request,response) =>{
   var name = request.body.username;
   var pass = request.body.password;
 
-  const user = await User.findOne({username:name,password:pass});
+  const user = await db.collection('users').findOne({username:name,password:pass});
 
   if(user === null){
     var content = "You are not signed up, Please create an account!";
     response.render('message',{content});
     return;
   }
-
+  
   session = request.session
   session.userid = request.body.username
 
@@ -79,7 +84,35 @@ server.post('/', async (request,response) =>{
 
 })
 
+server.get('/registration', (request,response) =>{
+  response.render('registration');
+});
 
+server.post('/register', async (request,response) =>{
+  var name = request.body.username;
+  var pass = request.body.password;
+
+  var user = await db.collection('users').findOne( {username : name});
+
+  if(user != null){
+    var content  = "Username already token please choose another one";
+    response.render('message',{content});
+    return ;
+  }
+  
+  if(name == "" || pass == ""){
+    var content  = "Username or Password field is missing";
+    response.render('message',{content});
+    return ;
+  }
+
+  var user = {username : name , password : pass};
+
+  await db.collection('users').insertOne(user);
+
+  response.redirect('/login');
+
+})
 
 
 
