@@ -34,6 +34,7 @@ var session
 const {connectToDb , getDb} = require('./db');
 const { request } = require('http');
 const { response } = require('express');
+const { render } = require('ejs');
 
 let db
 
@@ -182,3 +183,22 @@ server.get('/inca',(request,response) =>{
 
   response.render('inca')
 })
+
+
+server.post('/add', async (request,response) =>{
+  var name = session.userid;
+  var dest = request.body.destination;
+
+  var destinationObject = await db.collection('userDestination').findOne({username:name, destination:dest});
+
+  if(destinationObject != null){
+    var content = "Destination exists already!";
+    response.render('message',{content});
+    return;
+  }
+
+  await db.collection('userDestination').insertOne({username:name,destination:dest});
+  response.redirect('/home');
+
+});
+
