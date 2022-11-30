@@ -34,6 +34,7 @@ var session
 const {connectToDb , getDb} = require('./db');
 const { request } = require('http');
 const { response } = require('express');
+const { render } = require('ejs');
 
 let db
 
@@ -132,11 +133,73 @@ server.post('/register', async (request,response) =>{
   response.redirect('/login');
 
 })
+/////////////////////////////////////////////today
+server.get('/home', (request,response) =>{
+  response.render('home');
+  
+});
+
+server.get('/hiking',(request,response)=>{
+
+response.render('hiking')
 
 
+})
 
 
+server.get('/cities',(request,response) =>{
+
+  response.render('cities')
+})
+
+server.get('/islands',(request,response) =>
 
 
+{ response.render('islands')    })
+             
+
+server.get('/paris',(request,response) =>{
+
+  response.render('paris')
+})
+server.get('/rome',(request,response) =>{
+
+  response.render('rome')
+})
+
+server.get('/santorini',(request,response) =>{
+
+  response.render('santorini')
+})
+server.get('/bali',(request,response) =>{
+
+  response.render('bali')
+})
+server.get('/annapurna',(request,response) =>{
+
+  response.render('annapurna')
+})
+server.get('/inca',(request,response) =>{
+
+  response.render('inca')
+})
+
+
+server.post('/add', async (request,response) =>{
+  var name = session.userid;
+  var dest = request.body.destination;
+
+  var destinationObject = await db.collection('userDestination').findOne({username:name, destination:dest});
+
+  if(destinationObject != null){
+    var content = "Destination exists already!";
+    response.render('message',{content});
+    return;
+  }
+
+  await db.collection('userDestination').insertOne({username:name,destination:dest});
+  response.redirect('/home');
+
+});
 
 
