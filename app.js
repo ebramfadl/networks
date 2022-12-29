@@ -35,6 +35,9 @@ const {connectToDb , getDb} = require('./db');
 const { request } = require('http');
 const { response } = require('express');
 const { render } = require('ejs');
+const { appendFile } = require('fs');
+const { fileURLToPath } = require('url');
+const { Z_FULL_FLUSH } = require('zlib');
 
 let db
 
@@ -63,7 +66,7 @@ server.get('/login', (request,response) => {
 })
 
 //Log in
-server.post('/', async (request,response) =>{
+server.post('/login', async (request,response) =>{
 
   var name = request.body.username; //retrieve the username value from the front end
   var pass = request.body.password;//retrieve the password value from the front end
@@ -77,8 +80,8 @@ server.post('/', async (request,response) =>{
   //if const user was found in the database it will hold an object otherwise will hold a NULL
   //we need to check if that user is not in the database which means that he/she does not have an account
   if(user === null){
-    var content = "You are not signed up, Please create an account!";
-    response.render('message',{content});
+    var msg = "You are not signed up, Please create an account!";
+    response.render('message',{msg});
     return;
   }
   
@@ -86,8 +89,10 @@ server.post('/', async (request,response) =>{
   //the server needs to serve each user separately so each one will have it's own session 
   session = request.session 
   session.userid = request.body.username // the session id is the username of the user because it's unique for each user
+  
+  await db.collection('loggedin').insertOne({username:name})
 
-  console.log(user);
+  //console.log(user);
   response.render('home');
 
 })
@@ -107,15 +112,15 @@ server.post('/register', async (request,response) =>{
 
   //this is to check if the user was found already in the database in that case display an error message
   if(user != null){
-    var content  = "Username already token please choose another one";
-    response.render('message',{content}); // render to the message page with a variable 'content' to be displayed as an HTML text between <h1> </h1>
+    var msg  = "Username already token please choose another one";
+    response.render('message',{msg}); // render to the message page with a variable 'content' to be displayed as an HTML text between <h1> </h1>
     return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
   
   //to check if one of the input fields is empty
   if(name == "" || pass == ""){
-    var content  = "Username or Password field is missing";
-    response.render('message',{content});
+    var msg  = "Username or Password field is missing";
+    response.render('message',{msg});
     return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
 
@@ -127,61 +132,146 @@ server.post('/register', async (request,response) =>{
   //add it to the database (which means that someone created an account)
   //hence they can login and use the website 
   await db.collection('users').insertOne(user);
-
   //send that user to the login page after registeration is successful(as required in the description)
   //we use redirect to go one page back while render to go one page forward
   response.redirect('/login');
 
 })
 /////////////////////////////////////////////today
-server.get('/home', (request,response) =>{
+server.get('/home', async (request,response) =>{
+
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
+
   response.render('home');
   
 });
 
-server.get('/hiking',(request,response)=>{
+server.get('/hiking',async (request,response)=>{
 
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
 response.render('hiking')
 
 
 })
 
 
-server.get('/cities',(request,response) =>{
+server.get('/cities',async (request,response) =>{
 
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
   response.render('cities')
 })
 
-server.get('/islands',(request,response) =>
+server.get('/islands',async (request,response) =>{ 
+  
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
 
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
+  response.render('islands')    
 
-{ response.render('islands')    })
+})
              
 
-server.get('/paris',(request,response) =>{
+server.get('/paris',async (request,response) =>{
 
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
   response.render('paris')
 })
-server.get('/rome',(request,response) =>{
+
+
+server.get('/rome',async (request,response) =>{
+
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
 
   response.render('rome')
 })
 
-server.get('/santorini',(request,response) =>{
+server.get('/santorini',async (request,response) =>{
 
-  response.render('santorini')
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
+
+  response.render('santorini');
+
 })
-server.get('/bali',(request,response) =>{
+server.get('/bali',async (request,response) =>{
+
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
 
   response.render('bali')
-})
-server.get('/annapurna',(request,response) =>{
 
+})
+
+server.get('/annapurna',async (request,response) =>{
+  
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
   response.render('annapurna')
-})
-server.get('/inca',(request,response) =>{
 
+})
+
+
+
+server.get('/inca',async (request,response) =>{
+  
+  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    response.render('message',{msg})
+    return;
+  }
   response.render('inca')
+
 })
 
 
@@ -192,8 +282,8 @@ server.post('/add', async (request,response) =>{
   var destinationObject = await db.collection('userDestination').findOne({username:name, destination:dest});
 
   if(destinationObject != null){
-    var content = "Destination exists already!";
-    response.render('message',{content});
+    var msg = "Destination exists already!";
+    response.render('message',{msg});
     return;
   }
 
@@ -202,3 +292,61 @@ server.post('/add', async (request,response) =>{
 
 });
 
+
+server.get('/wanttogo',async (req,res) => {
+
+  var userList = await db.collection('userDestination').find({username : req.session.userid}).toArray();
+  
+  //console.log(userList)
+  res.render('wanttogo',{userList} );
+
+})
+
+
+
+server.post('/remove', async (req,res) =>{
+  var removed = req.body.dest
+
+  await db.collection('userDestination').deleteOne({username : req.session.userid , destination : removed})
+  
+  var userList = await db.collection('userDestination').find({username : req.session.userid}).toArray();
+  
+  //console.log(userList)
+  res.render('wanttogo',{userList});
+})
+
+
+server.post('/search', async (req,res)=> {
+
+  var str = req.body.Search;
+
+  var list = await db.collection('destinations').find({destination: {'$regex' : `.${str}.*`, '$options' : 'i'} }).toArray()
+  //"" list full
+  //"dfsdfsdfsdf" list empty
+
+  if(list.length == 0 || str.length === 0){
+    var msg = "Item not found";
+    res.render('message',{msg});
+    return;
+  }
+
+  res.render('searchresults',{list})
+
+})
+
+
+server.get('/logout', async (req,res)=>{
+
+  await db.collection('loggedin').deleteMany({username:req.session.userid})
+
+  req.session.destroy();
+  res.render('login');
+
+})
+
+
+// var dest = ["annapurna","bali","inca","paris","rome","santorini"]
+
+//   for(let i=0 ; i < dest.length ; i++){
+//     var list = await db.collection('destinations').insertOne({destination:dest[i]})
+//   }

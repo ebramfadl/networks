@@ -8,7 +8,7 @@ let dbConnection;
 
 module.exports = {
   connectToDb : (cb)=>{
-    MongoClient.connect('mongodb://localhost:27017/test')
+    MongoClient.connect("mongodb+srv://admin:admin@cluster0.nxlilzi.mongodb.net/test")
     .then((client)=>{
       dbConnection = client.db();
       return cb()
