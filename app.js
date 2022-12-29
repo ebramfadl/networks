@@ -4,7 +4,7 @@ var server = express();
 var path = require('path');
 var bodyParser = require('body-parser');
 var sessions = require('express-session');
-
+const MemoryStore = require('memorystore')(sessions)
 
 server.set('views',path.join(__dirname, 'views'));
 server.set('view engine','ejs');
@@ -24,7 +24,10 @@ server.use(sessions({
   secret : "6436A1449Y16408N2168J18094E-JAENY-May-FEB-DEC-OCT",
   saveUninitialized:true,
   cookie : {maxAge : 1000*60*60*60*5},
-  resave : true
+  resave : true,
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  })
 }));
 
 
