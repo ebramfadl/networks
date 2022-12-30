@@ -4,7 +4,7 @@ var server = express();
 var path = require('path');
 var bodyParser = require('body-parser');
 var sessions = require('express-session');
-const MemoryStore = require('memorystore')(sessions)
+//const MemoryStore = require('memorystore')(sessions)
 
 server.set('views',path.join(__dirname, 'views'));
 server.set('view engine','ejs');
@@ -25,9 +25,9 @@ server.use(sessions({
   saveUninitialized:true,
   cookie : {maxAge : 1000*60*60*60*5},
   resave : true,
-  store: new MemoryStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  })
+  // store: new MemoryStore({
+  //   checkPeriod: 86400000 // prune expired entries every 24h
+  // })
 }));
 
 
@@ -35,12 +35,12 @@ var session
 
   
 const {connectToDb , getDb} = require('./db');
-const { request } = require('http');
-const { response } = require('express');
-const { render } = require('ejs');
-const { appendFile } = require('fs');
-const { fileURLToPath } = require('url');
-const { Z_FULL_FLUSH } = require('zlib');
+// const { req } = require('http');
+// const { res } = require('express');
+// const { render } = require('ejs');
+// const { appendFile } = require('fs');
+// const { fileURLToPath } = require('url');
+// const { Z_FULL_FLUSH } = require('zlib');
 
 let db
 
@@ -60,19 +60,19 @@ connectToDb((err)=> {
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 
-server.get('/', (request,response) => {
-  response.render('login');
+server.get('/', (req,res) => {
+  res.render('login');
 })
 
-server.get('/login', (request,response) => {
-  response.render('login');
+server.get('/login', (req,res) => {
+  res.render('login');
 })
 
 //Log in
-server.post('/login', async (request,response) =>{
+server.post('/login', async (req,res) =>{
 
-  var name = request.body.username; //retrieve the username value from the front end
-  var pass = request.body.password;//retrieve the password value from the front end
+  var name = req.body.username; //retrieve the username value from the front end
+  var pass = req.body.password;//retrieve the password value from the front end
 
   
   //find an object that it's username attribute has the value name and password has value pass
@@ -84,30 +84,30 @@ server.post('/login', async (request,response) =>{
   //we need to check if that user is not in the database which means that he/she does not have an account
   if(user === null){
     var msg = "You are not signed up, Please create an account!";
-    response.render('message',{msg});
+    res.render('message',{msg});
     return;
   }
   
   
   //the server needs to serve each user separately so each one will have it's own session 
-  session = request.session 
-  session.userid = request.body.username // the session id is the username of the user because it's unique for each user
+  session = req.session 
+  session.userid = req.body.username // the session id is the username of the user because it's unique for each user
   
   await db.collection('loggedin').insertOne({username:name})
 
   //console.log(user);
-  response.render('home');
+  res.render('home');
 
 })
 
-server.get('/registration', (request,response) =>{
-  response.render('registration');
+server.get('/registration', (req,res) =>{
+  res.render('registration');
   //remember that we need to create a get method for all webpages
 });
 
-server.post('/register', async (request,response) =>{
-  var name = request.body.username;//retrieve the username value from the front end
-  var pass = request.body.password;//retrieve the password value from the front end
+server.post('/register', async (req,res) =>{
+  var name = req.body.username;//retrieve the username value from the front end
+  var pass = req.body.password;//retrieve the password value from the front end
 
   //find an object that it's username attribute has the value name that is retrieved from the front end
   //const user (will hold an object if it was found in the database otherwise it will hold Null)
@@ -116,14 +116,14 @@ server.post('/register', async (request,response) =>{
   //this is to check if the user was found already in the database in that case display an error message
   if(user != null){
     var msg  = "Username already token please choose another one";
-    response.render('message',{msg}); // render to the message page with a variable 'content' to be displayed as an HTML text between <h1> </h1>
+    res.render('message',{msg}); // render to the message page with a variable 'content' to be displayed as an HTML text between <h1> </h1>
     return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
   
   //to check if one of the input fields is empty
   if(name == "" || pass == ""){
     var msg  = "Username or Password field is missing";
-    response.render('message',{msg});
+    res.render('message',{msg});
     return ; // return in order not to execute the rest of the method because we don't want to add to the DB in that case
   }
 
@@ -137,161 +137,161 @@ server.post('/register', async (request,response) =>{
   await db.collection('users').insertOne(user);
   //send that user to the login page after registeration is successful(as required in the description)
   //we use redirect to go one page back while render to go one page forward
-  response.redirect('/login');
+  res.redirect('/login');
 
 })
 /////////////////////////////////////////////today
-server.get('/home', async (request,response) =>{
+server.get('/home', async (req,res) =>{
 
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
 
-  response.render('home');
+  res.render('home');
   
 });
 
-server.get('/hiking',async (request,response)=>{
+server.get('/hiking',async (req,res)=>{
 
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
-response.render('hiking')
+res.render('hiking')
 
 
 })
 
 
-server.get('/cities',async (request,response) =>{
+server.get('/cities',async (req,res) =>{
 
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
-  response.render('cities')
+  res.render('cities')
 })
 
-server.get('/islands',async (request,response) =>{ 
+server.get('/islands',async (req,res) =>{ 
   
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
-  response.render('islands')    
+  res.render('islands')    
 
 })
              
 
-server.get('/paris',async (request,response) =>{
+server.get('/paris',async (req,res) =>{
 
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
-
-  if(user === null){
-    var msg = "You are not logged in"
-    response.render('message',{msg})
-    return;
-  }
-  response.render('paris')
-})
-
-
-server.get('/rome',async (request,response) =>{
-
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
-
-  response.render('rome')
+  res.render('paris')
 })
 
-server.get('/santorini',async (request,response) =>{
 
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+server.get('/rome',async (req,res) =>{
+
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
 
-  response.render('santorini');
-
+  res.render('rome')
 })
-server.get('/bali',async (request,response) =>{
 
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+server.get('/santorini',async (req,res) =>{
+
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
 
-  response.render('bali')
+  res.render('santorini');
+
+})
+server.get('/bali',async (req,res) =>{
+
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
+
+  if(user === null){
+    var msg = "You are not logged in"
+    res.render('message',{msg})
+    return;
+  }
+
+  res.render('bali')
 
 })
 
-server.get('/annapurna',async (request,response) =>{
+server.get('/annapurna',async (req,res) =>{
   
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
-  response.render('annapurna')
+  res.render('annapurna')
 
 })
 
 
 
-server.get('/inca',async (request,response) =>{
+server.get('/inca',async (req,res) =>{
   
-  var user = await db.collection('loggedin').findOne({username:request.session.userid});
+  var user = await db.collection('loggedin').findOne({username:req.session.userid});
 
   if(user === null){
     var msg = "You are not logged in"
-    response.render('message',{msg})
+    res.render('message',{msg})
     return;
   }
-  response.render('inca')
+  res.render('inca')
 
 })
 
 
-server.post('/add', async (request,response) =>{
+server.post('/add', async (req,res) =>{
   var name = session.userid;
-  var dest = request.body.destination;
+  var dest = req.body.destination;
 
   var destinationObject = await db.collection('userDestination').findOne({username:name, destination:dest});
 
   if(destinationObject != null){
     var msg = "Destination exists already!";
-    response.render('message',{msg});
+    res.render('message',{msg});
     return;
   }
 
   await db.collection('userDestination').insertOne({username:name,destination:dest});
-  response.redirect('/home');
+  res.redirect('/home');
 
 });
 
