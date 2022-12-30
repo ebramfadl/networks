@@ -4,6 +4,7 @@ var server = express();
 var path = require('path');
 var bodyParser = require('body-parser');
 var sessions = require('express-session');
+
 //const MemoryStore = require('memorystore')(sessions)
 
 server.set('views',path.join(__dirname, 'views'));
@@ -23,7 +24,10 @@ server.use(cookieParser());
 server.use(sessions({
   secret : "6436A1449Y16408N2168J18094E-JAENY-May-FEB-DEC-OCT",
   saveUninitialized:true,
-  cookie : {maxAge : 1000*60*60*60*5},
+  cookie : {
+    maxAge : 1000*60*60*60*5,
+    secure : true
+  },
   resave : true,
   // store: new MemoryStore({
   //   checkPeriod: 86400000 // prune expired entries every 24h
@@ -31,10 +35,21 @@ server.use(sessions({
 }));
 
 
+
+
+server.use(function(req,res,next){
+  if(!req.session){
+      return next(new Error('Oh no')) //handle error
+  }
+  next() //otherwise continue
+  });
+
+
 var session 
 
   
 const {connectToDb , getDb} = require('./db');
+//const cookieSession = require('cookie-session');
 // const { req } = require('http');
 // const { res } = require('express');
 // const { render } = require('ejs');
