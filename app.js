@@ -87,7 +87,6 @@ server.post('/login', async (req,res) =>{
   
   await db.collection('loggedin').insertOne({username:name})
 
-  console.log(user);
   res.render('home');
 
 })
@@ -314,7 +313,6 @@ server.post('/add', async (req,res) =>{
 server.get('/wanttogo',async (req,res) => {
   var userList = await db.collection('userDestination').find({username : req.session.userid}).toArray();
   
-  console.log(userList)
   
   res.render('wanttogo',{userList} );
 
@@ -324,11 +322,9 @@ server.get('/wanttogo',async (req,res) => {
 
 
 server.post('/remove', async (req,res) =>{
-  console.log(req.body.dest);
   await db.collection('userDestination').deleteOne({username : req.session.userid , destination : req.body.dest})
   
   var userList = await db.collection('userDestination').find({username : req.session.userid}).toArray();
-  //console.log(userList);
   res.render('wanttogo',{userList});
 })
 
@@ -338,7 +334,7 @@ server.post('/remove', async (req,res) =>{
 
 server.post('/search', async (req,res)=> {
   var str = req.body.Search;
-  var list = await db.collection('destinations').find({destination: {'$regex' : `.${str}.*`, '$options' : 'i'} }).toArray()
+  var list = await db.collection('destinations').find({destination: {'$regex' : `${str}`, '$options' : 'i'} }).toArray()
   
 
   if(list.length == 0 || str.length === 0 || str == "."){
