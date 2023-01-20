@@ -3,23 +3,24 @@
 
 <head>
     <style>
-        body {
-            background-image: url("background2.jpg");
+          body {
             background-repeat: no-repeat;
             background-size: 100%;
-            }
-        h1 {
-            color: white;
             text-align: center;
-            -webkit-text-stroke: 1px blue;
+            
         }
-        .cont {
-            position:relative;
-            left:600px;
-            top:50px;
-            color: white;
-            -webkit-text-stroke: 0.5px black;
+        img{
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 5px;
+            margin-bottom: 2rem;
         }
+        
+ 
+        input{
+            width: -webkit-fill-available;
+        }
+ 
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,19 +30,46 @@
         crossorigin="anonymous">
 </head>
 
-<body>
-    <div class="container">
-        <h1>Registration</h1>
-    </div>
-    <div class="cont">
-        <form method='post' action='/register'>
-            Username: <br>
-            <input type="text" id="user" name="username"> <br>
-            Password: <br>
-            <input type="password" id="password" name="password"> <br> <br>
-            <input type="submit" id="simple_click" class="btn btn-secondary" value="Register"> <br>
-        </form>
-    </div>
-</body>
 
+
+<body>
+    <br>
+    <br>
+    <div class="container" >
+    <br>
+    <h1 style="text-align: center;">Registration</h1>
+    <br>    
+    <form style="border: 2px solid green;border-radius: 5px;" method='post' action='/register'>
+        <br>
+        <br>
+        <div class="mx-auto col-md-4 mb-3">
+            <label for="validationServerUsername">Username</label>
+            <div class="input-group">         
+              <input name="username" type="text" class="form-control" id="validationServerUsername" placeholder="Username" aria-describedby="inputGroupPrepend3" >
+            </div>
+          </div>
+          <br>
+          <div class="mx-auto col-md-4 mb-3">
+            <label for="validationServerPassword">Password</label>
+            <div class="input-group">         
+              <input name="password" type="password" class="form-control" id="validationServerPassword" placeholder="Password" aria-describedby="inputGroupPrepend3" >
+            </div>
+          </div>
+          <br>
+          <div class="mx-auto col-md-4">
+            <button style="width: 100%;" type="submit" class="btn btn-success">Register</button>
+          </div>
+          <br>
+      </form>
+      <br>
+      
+    </div>
+    <br>
+    <br>
+    <div class="container">
+        <img src="background2.jpg" alt="Something went wrong">
+
+    </div>
+
+</body>
 </html>

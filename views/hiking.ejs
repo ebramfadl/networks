@@ -3,7 +3,6 @@
 <head>
     <style>
         body {
-            background-image: url("background3.jpg");
             background-repeat: no-repeat;
             background-size: 100%;
         }
@@ -12,75 +11,120 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
-        .cont {
-            position: relative;
-            left: 600px;
-            top: 50px;
-            color: white;
-            -webkit-text-stroke: 0.5px black;
+        .cat-container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container1 {
+        .wanttogo {
             position: fixed;
-            left: 50px;
-            top: 150px;
-            color: white;
+            left: 80px;
+            top: 370px;
         }
-        .container2 {
-            position: fixed;
-            left: 300px;
-            top: 150px;
-            color: white;
+        .fullbtn{
+            width: -webkit-fill-available;
         }
-        #label1 {
-            position: relative;
-            right: 10px;
+        .search-res{
+            display: none;
+            margin-top: 45px;
         }
-        #label2 {
-            position: relative;
-            right: 0px;
+        .search-normal{
+            display: flex;
         }
-        #inca, #annapurna {
-            position: relative;
-            left: 50px;
+        .logout-res{
+            display: none;
+        }
+        img{
+            height: 300px;
+            width: auto;
+        }
+        @media only screen and (max-width: 768px) {
+            .container{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .cat-container{
+                margin-bottom: 10px;
+            }
+            .search-res{
+                display: block;
+            }
+            .search-normal{
+                display: none;
+            }
+            .logout-res{
+                display: block;
+                position: absolute;
+                top: 9px;
+                right: 7px;
+                z-index: 2000;
+            }
         }
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Hiking</title>
+    <title>Destinations</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
-        <a class="navbar-brand" style="color: rgb(191, 255, 161)">Hiking</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-            </ul>
-            <form method="POST" action='/search' class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" name="Search" type="search" placeholder="Search"
-                    aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    <button onclick="location.href = '/logout';" id="logout" class="btn btn-danger ml-3 logout-res">Logout</button>
+
+    <nav class="navbar fixed-top navbar-light justify-content-between" style="background-color: #404243 ;">
+        
+        <a class="navbar-brand text-white">Hiking</a>
+        <div class="search-normal">
+            <form class="form-inline" method="POST" action='/search'>
+            <input name="Search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+
             </form>
-        </div>
-    </nav>
-    <div class="container1">
-        <img id="image" src="/inca.png" width="193" height="300">
-        <br>
-        <label id="label1" class="ml-4 my-2">Inca Trail to Machu Picchu</label>
-        <br>
-        <button onclick="location.href = '/inca';" id="inca" class="btn btn-secondary ml-3"> View </button>
+            <button onclick="location.href = '/logout';" id="logout" class="btn btn-danger ml-3">Logout</button>
+
+        </div>    
+      </nav>
+      
+    <br>
+
+    <div class="container search-res">
+        <form class="form-inline" method="POST" action='/search'>
+            <input name="Search" class="form-control col-md-9" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 col-md-3" type="submit">Search</button>
+
+        </form>
     </div>
-    <div class="container2">
-        <img id="image" src="/annapurna.png" width="193" height="300">
+    <br>
+    <br>
+    
+    <div class="container d-flex">
+        
         <br>
-        <label id ="label2" class="ml-4 my-2">Annapurna Circuit</label>
+        <div class="mx-auto col-md-6 mb-3 cat-container">
+        <img id="image" src="/inca.png" width="100" height="100">
         <br>
-        <button onclick="location.href = '/annapurna';" id="annapurna" class="btn btn-secondary ml-3"> View </button>
+        <label class="ml-4 my-2">Inca Trail to Machu Picchu</label>
+        <br>
+        <button onclick="location.href = '/inca';" class="fullbtn btn btn-primary"> View </button>
     </div>
+    <br>
+    
+    
+    <div class="mx-auto col-md-6 mb-3 cat-container">
+        <img id="image" src="/annapurna.png" width="100" height="100">
+        <br>
+        <label class="ml-4 my-2">Annapurna Circuit</label>
+        <br>
+        <button onclick="location.href = '/annapurna';"  class="fullbtn btn btn-primary"> View </button>
+    </div>
+    <br>
+    </div>
+    <br>
+    
 </body>
 </html>
+
+
+

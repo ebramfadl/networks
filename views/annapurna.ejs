@@ -1,9 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <style>
         body {
-            background-image: url("background3.jpg");
             background-repeat: no-repeat;
             background-size: 100%;
         }
@@ -12,82 +12,126 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
-        .container1 {
-            position: fixed;
-            left: 50px;
-            top: 150px;
-            color: white;
+        .cat-container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container2 {
+        /* .wanttogo {
             position: fixed;
-            left: 300px;
-            top: 150px;
-            color: white;
-            width: 300px;
-            text-align: justify;
-            text-justify: inter-word;
+            left: 80px;
+            top: 370px;
+        } */
+        .fullbtn{
+            width: -webkit-fill-available;
         }
-        .video {
-            position: fixed;
-            left: 700px;
-            top: 150px;
-            color: white;
-            width: 300px;
-            text-align: justify;
-            text-justify: inter-word;
+        .search-res{
+            display: none;
+            margin-top: 45px;
         }
-        .wanttogo {
-            position: fixed;
-            left: 30px;
-            top: 470px;
+        .search-normal{
+            display: flex;
         }
-        #my {
-            zoom: 110%;
+        .logout-res{
+            display: none;
+        }
+        img{
+            height: 300px;
+            width: auto;
+            border-radius: 5px;
+        }
+        iframe{
+            width: -webkit-fill-available;
+            height: -webkit-fill-available
+        }
+
+        @media only screen and (max-width: 768px) {
+            .container{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .cat-container{
+                margin-bottom: 10px;
+            }
+            .search-res{
+                display: block;
+            }
+            .search-normal{
+                display: none;
+            }
+            .logout-res{
+                display: block;
+                position: absolute;
+                top: 9px;
+                right: 7px;
+                z-index: 2000;
+            }
         }
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Annapurna Circuit</title>
+    <title>Destinations</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
-        <a class="navbar-brand" style="color: rgb(191, 255, 161)">Annapurna Circuit</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-            </ul>
-            <form method="POST" action='/search' class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" name="Search" type="search" placeholder="Search"
-                    aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    <button onclick="location.href = '/logout';" id="logout" class="btn btn-danger ml-3 logout-res">Logout</button>
+
+    <nav class="navbar fixed-top navbar-light justify-content-between" style="background-color: #404243 ;">
+        
+        <a class="navbar-brand text-white">Annapurna</a>
+        <div class="search-normal">
+            <form class="form-inline" method="POST" action='/search'>
+            <input name="Search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+
+            </form>
+            <button onclick="location.href = '/logout';" id="logout" class="btn btn-danger ml-3">Logout</button>
+
+        </div>    
+      </nav>
+      
+    <br>
+
+    <div class="container search-res">
+        <form class="form-inline" method="POST" action='/search'>
+            <input name="Search" class="form-control col-md-9" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 col-md-3" type="submit">Search</button>
+
+        </form>
+    </div>
+    <br>
+    <br>
+    
+    <div class="container d-flex justify-content-between">
+        <div class="col-md-3 justify-content-center">
+            <img id="image" src="/annapurna.png" style="width: -webkit-fill-available;">
+            
+            <form method ='post' action ='/add'>
+                <br>
+                <button type="submit" name="destination" value="annapurna" id="wanttogo" class="btn btn-secondary ml-3" style="width: -webkit-fill-available;">Add to Want-to-Go List</button>
             </form>
         </div>
-    </nav>
-    <div class="container1">
-        <img id="image" src="/annapurna.png" width="193" height="300">
+        <br>
+        <br>
+        <div class="col-md-3">
+            <p>Annapurna Circuit has been voted as the best long-distance trek in the world, as it combined a wide variety of climate zones from tropics at 600m above sea level to the arctic at 5416m above sea level at the Thorong La pass and cultural variety from Hindu villages at the low foothills to the Tibetan culture of Manang.</p>
+        </div>
+        <br>
+        <br>
+        <div class="col-md-5" >
+            <iframe autoplay
+                src="https://www.youtube.com/embed/ZQy8rDxEdRU">
+            </iframe>
+        </div>
+        <br>
     </div>
-    <div class="container2">
-        Annapurna Circuit has been voted as the best long-distance trek in the world, as it combined a wide variety of climate zones from tropics at 600m above sea level to the arctic at 5416m above sea level at the Thorong La pass and cultural variety from Hindu villages at the low foothills to the Tibetan culture of Manang.
-    </div>
-    <div class="wanttogo">
-
- <form method ='post' action ='/add'>
-    <button type="submit" name="destination" value="annapurna" id="wanttogo" class="btn btn-secondary ml-3">Add to Want-to-Go List</button>
- </form>
-
-    </div>
-    <div class="video">
-        
-        <iframe width="480" height="360" autoplay
-            src="https://www.youtube.com/embed/ZQy8rDxEdRU">
-        </iframe>
-    </div>
+    
 </body>
 </html>
+
+
 
